@@ -6,7 +6,13 @@ ORDER BY YEAR(O.OrderDate) ASC
 
 -- q1 cual es el producto del que mas unidades se vendieron en 1996
 
-SELECT TOP 1 P.ProductNameFROM Products AS PJOIN [Order Details] AS OD ON P.ProductID = OD.ProductIDJOIN Orders AS O ON OD.OrderID = O.OrderIDWHERE YEAR(O.OrderDate) = 1996GROUP BY P.ProductNameORDER BY SUM(OD.Quantity) DESC
+SELECT TOP 1 P.ProductName
+FROM Products AS P
+JOIN [Order Details] AS OD ON P.ProductID = OD.ProductID
+JOIN Orders AS O ON OD.OrderID = O.OrderID
+WHERE YEAR(O.OrderDate) = 1996
+GROUP BY P.ProductName
+ORDER BY SUM(OD.Quantity) DESC
 
 -- q2 cual es el total de ventas (dinero) en 1996
 SELECT ROUND(SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)),2)'Venta en el 96' 
@@ -25,10 +31,19 @@ SELECT ROUND(SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)),2)'Venta Historic
 FROM [Order Details] AS OD
 
 -- q5 cual es el producto que genero mas ganancias en 1997 
-SELECT ROUND(SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)),2)'Venta en el 97' 
-FROM [Order Details] AS OD
+
+SELECT P.ProductName AS 'Producto con mas ganancias en 1997'
+FROM Products AS P
+JOIN [Order Details] AS OD ON P.ProductID = OD.ProductID
 JOIN Orders AS O ON OD.OrderID = O.OrderID
 WHERE YEAR(O.OrderDate) = 1997
+GROUP BY P.ProductName
+HAVING SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) = (SELECT MAX(T.Ganancias)
+															FROM ( SELECT SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) 'Ganancias'
+															FROM [Order Details] AS OD
+															JOIN Orders AS O ON OD.OrderID = O.OrderID
+															WHERE YEAR(O.OrderDate) = 1997
+															GROUP BY OD.ProductID ) T )
 
 -- q6 cual es la region de Estados Unidos que vendio mas  productos en 1997 
 SELECT C.Region
