@@ -1,3 +1,7 @@
+/*Creacion de DW */
+USE master
+CREATE database NorthwindDW
+GO
 
 /* Northwind Data Warehouse ya debe estar creada */
 

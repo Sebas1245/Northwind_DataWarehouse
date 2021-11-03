@@ -26,7 +26,7 @@ INSERT INTO DimEmployee
 UPDATE DimEmployee SET Region='Europe' 
 WHERE Country = 'UK'
 
---falta poblar customer y DimTime. DimTime es solo el orderdate que tomm�mos de orders 
+--falta poblar customer y DimTime. DimTime es solo el orderdate que tomamos de orders 
 -- dimension Customer
 INSERT INTO DimCustomer
    SELECT C.CustomerID, C.CompanyName 'CustomerName', C.City, C.Country, C.Region
@@ -46,7 +46,7 @@ WHERE Country='Mexico'
 /* Falta DimTime y FactSales */
 -- dimension Time
 INSERT INTO DimTime
-   SELECT O.OrderDate
+   SELECT DISTINCT O.OrderDate
    FROM NorthwindDB.dbo.Orders O
 
 
