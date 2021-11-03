@@ -39,44 +39,30 @@ JOIN Orders AS O ON OD.OrderID = O.OrderID
 WHERE YEAR(O.OrderDate) = 1997
 GROUP BY P.ProductName
 HAVING SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) = (SELECT MAX(T.Ganancias)
-															FROM ( SELECT SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) 'Ganancias'
-															FROM [Order Details] AS OD
-															JOIN Orders AS O ON OD.OrderID = O.OrderID
-															WHERE YEAR(O.OrderDate) = 1997
-															GROUP BY OD.ProductID ) T )
+FROM ( SELECT SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) 'Ganancias'
+		FROM [Order Details] AS OD
+		JOIN Orders AS O ON OD.OrderID = O.OrderID
+		WHERE YEAR(O.OrderDate) = 1997
+		GROUP BY OD.ProductID ) T )
 
 -- q6 cual es la region de Estados Unidos que vendio mas  productos en 1997 
-SELECT C.Region
-FROM Customers AS C 
-JOIN ORDERS AS O ON C.CustomerID = O.CustomerID
-JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID
-WHERE C.Country = 'USA' AND YEAR(O.OrderDate) = 1997
-GROUP BY C.Region
-HAVING SUM(OD.Quantity) =  (
-							SELECT MAX(T.Suma) FROM (
-													SELECT SUM(OD.Quantity) 'Suma'
-													FROM Customers AS C 
-													JOIN ORDERS AS O ON C.CustomerID = O.CustomerID
-													JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID
-													WHERE C.Country = 'USA' AND YEAR(O.OrderDate) = 1997
-													GROUP BY C.Region) AS T 
-							)
-
-SELECT O.ShipRegion
-FROM Customers AS C 
-JOIN ORDERS AS O ON C.CustomerID = O.CustomerID
+SELECT E.Region
+FROM Employees AS E
+JOIN Orders AS O ON E.EmployeeID = O.EmployeeID
 JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID
 WHERE O.ShipCountry = 'USA' AND YEAR(O.OrderDate) = 1997
-GROUP BY O.ShipRegion
-HAVING SUM(OD.Quantity) =  (
-							SELECT MAX(T.Suma) FROM (
-													SELECT SUM(OD.Quantity) 'Suma'
-													FROM Customers AS C 
-													JOIN ORDERS AS O ON C.CustomerID = O.CustomerID
-													JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID
-													WHERE O.ShipCountry = 'USA' AND YEAR(O.OrderDate) = 1997
-													GROUP BY O.ShipRegion) AS T 
+GROUP BY E.Region
+HAVING SUM(OD.Quantity) = (
+							SELECT MAX(T.Suma) 
+							FROM (
+								SELECT SUM(OD.Quantity) 'Suma'
+								FROM Employees AS E 
+								JOIN ORDERS AS O ON E.EmployeeID = O.EmployeeID
+								JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID
+								WHERE O.ShipCountry = 'USA' AND YEAR(O.OrderDate) = 1997
+								GROUP BY E.Region) AS T 
 							)
+
 
 -- q7 para la region q6 cual es el estado o que mas ventas tuvo (dinero) en  1997
 
