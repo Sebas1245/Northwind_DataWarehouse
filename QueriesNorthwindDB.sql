@@ -38,14 +38,17 @@ JOIN [Order Details] AS OD ON P.ProductID = OD.ProductID
 JOIN Orders AS O ON OD.OrderID = O.OrderID
 WHERE YEAR(O.OrderDate) = 1997
 GROUP BY P.ProductName
-HAVING SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) = (SELECT MAX(T.Ganancias)
-FROM ( SELECT SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) 'Ganancias'
-		FROM [Order Details] AS OD
-		JOIN Orders AS O ON OD.OrderID = O.OrderID
-		WHERE YEAR(O.OrderDate) = 1997
-		GROUP BY OD.ProductID ) T )
+HAVING SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) = (
+															SELECT MAX(T.Ganancias)
+															FROM ( 
+																SELECT SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) 'Ganancias'
+																FROM [Order Details] AS OD
+																JOIN Orders AS O ON OD.OrderID = O.OrderID
+																WHERE YEAR(O.OrderDate) = 1997
+																GROUP BY OD.ProductID ) T 
+																)
 
--- q6 cual es la region de Estados Unidos que vendio mas  productos en 1997 
+-- q6 cual es la region de Estados Unidos que vendio mas productos en 1997 
 SELECT E.Region
 FROM Employees AS E
 JOIN Orders AS O ON E.EmployeeID = O.EmployeeID
@@ -64,14 +67,28 @@ HAVING SUM(OD.Quantity) = (
 							)
 
 
--- q7 para la region q6 cual es el estado o que mas ventas tuvo (dinero) en  1997
+-- q7 para la region q6 cual es la ciudad que mas ventas tuvo (dinero) en 1997
+SELECT E.City 'Ciudad con mas ventas en WA'
+FROM Employees AS E
+JOIN Orders AS O ON E.EmployeeID = O.EmployeeID
+JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID
+WHERE E.Region = 'WA'
+GROUP BY E.Region, E.City
+HAVING SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) = (
+															SELECT MAX(T.Suma)
+															FROM ( 
+																SELECT SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)) 'Suma'
+																FROM Employees AS E
+																JOIN Orders AS O ON E.EmployeeID = O.EmployeeID
+																JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID
+																WHERE E.Region = 'WA'
+																GROUP BY E.Region, E.City ) AS T
+															)
 
-
-
--- q8 cual es el total de ventas en total (todos  los anios) organizado por  Region, Pais, Estado y Cuidad  
-SELECT C.Country 'Pais',C.Region 'Region' , C.City 'Ciudad', ROUND(SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)),2)'Venta Historica' 
+-- q8 cual es el total de ventas en total (todos  los anios) organizado por  Pais, Region y Cuidad  
+SELECT E.Country 'Pais', E.Region 'Region' , E.City 'Ciudad', ROUND(SUM((OD.UnitPrice * OD.Quantity)*(1-OD.Discount)),2)'Venta Historica' 
 FROM [Order Details] AS OD
 JOIN Orders AS O ON OD.OrderID = O.OrderID
-JOIN Customers AS C ON C.CustomerID = O.CustomerID
-GROUP BY C.Region, C.Country, C.City
-ORDER BY C.Country
+JOIN Employees AS E ON O.EmployeeID = E.EmployeeID
+GROUP BY E.Region, E.Country, E.City
+ORDER BY E.Country

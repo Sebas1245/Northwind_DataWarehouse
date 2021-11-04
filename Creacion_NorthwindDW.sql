@@ -1,68 +1,66 @@
-/*Creacion de DW */
-USE master
-CREATE database NorthwindDW
+/*Creacion de Northwind DW */
+USE MASTER
+CREATE DATABASE NorthwindDW
 GO
 
 /* Northwind Data Warehouse ya debe estar creada */
 
-use NorthwindDW
-go
+USE NorthwindDW
+GO
 
-/* Creacion de una dimension. Agregue los campos que hagan falta de acuerdo a lo que indicamos en clase.*/
-create table DimProduct (
-ProductID    int,
-ProductName  varchar (40),
-categoryName varchar (15),
-SupplierName varchar(40),
-SuppplierAddress varchar(100),
-City varchar(40),
-Region varchar(40),
-PostalCode varchar(10),
-Country varchar(30),
-primary key (productID))
+/* Creacion de dimensiones. */
+CREATE TABLE DimProduct (
+ProductID    INT,
+ProductName  VARCHAR (40),
+categoryName VARCHAR (15),
+SupplierName VARCHAR(40),
+SuppplierAddress VARCHAR(100),
+City VARCHAR(40),
+Region VARCHAR(40),
+PostalCode VARCHAR(10),
+Country VARCHAR(30),
+PRIMARY KEY (productID))
 
-create table DimTime (
- OrderDate date,
- primary key (OrderDate)
+CREATE TABLE DimTime (
+ OrderDATE DATE,
+ PRIMARY KEY (OrderDATE)
  )
 
-
-/*FALATAN LAS OTRAS Dimensiones: Clientes, Empleados  */
-create table DimEmployee (
-	EmployeeID int, 
-	EmployeeName varchar(50),
-	City varchar(40),
-	Country varchar(30),
-	Region varchar(40),
-	hiredate date,
-	primary key (EmployeeID)
+CREATE TABLE DimEmployee (
+	EmployeeID INT, 
+	EmployeeName VARCHAR(50),
+	City VARCHAR(40),
+	Country VARCHAR(30),
+	Region VARCHAR(40),
+	hireDATE DATE,
+	PRIMARY KEY (EmployeeID)
 )
 
-create table DimCustomer (
+CREATE TABLE DimCustomer (
 	CustomerID char(5), 
-	CustomerName varchar(50),
-	City varchar(30),
-	Country varchar(30),
-	Region varchar(40),
-	primary key(CustomerID)
+	CustomerName VARCHAR(50),
+	City VARCHAR(30),
+	Country VARCHAR(30),
+	Region VARCHAR(40),
+	PRIMARY KEY(CustomerID)
 )
 
 --tabla de Hechos FACT SALES puede ser necesario agregar-quitar columnas
 -- OrderId  es llamda dimension degenerada pero es necesario solo para efectos de la carga de los datos
-create table FactSales (
-ProductID       int,
-EmployeeID      int,
+CREATE TABLE FactSales (
+ProductID       INT,
+EmployeeID      INT,
 CustomerID      char(5),
-orderDate       date,
-OrderID         int,                               
-Quantity        smallint,
-unitPrice       money,
-discountPercent real,
-discountAmount  money,
-total           money, 
-primary key (ProductID, EmployeeID, CustomerID, orderDate),
-foreign key (ProductID)  references dbo.DimProduct(productID),
-foreign key (EmployeeID) references dbo.DimEmployee(employeeID),
-foreign key (CustomerID) references dbo.DimCustomer(CustomerID),
-foreign key (orderDate)  references dbo.DimTime(orderDate)
+orderDATE       DATE,
+OrderID         INT,                               
+Quantity        SMALLINT,
+unitPrice       MONEY,
+discountPercent REAL,
+discountAmount  MONEY,
+total           MONEY, 
+PRIMARY KEY (ProductID, EmployeeID, CustomerID, orderDATE),
+FOREIGN KEY (ProductID)  REFERENCES dbo.DimProduct(productID),
+FOREIGN KEY (EmployeeID) REFERENCES dbo.DimEmployee(employeeID),
+FOREIGN KEY (CustomerID) REFERENCES dbo.DimCustomer(CustomerID),
+FOREIGN KEY (orderDATE)  REFERENCES dbo.DimTime(orderDATE)
 )
