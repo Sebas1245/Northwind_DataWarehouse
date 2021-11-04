@@ -91,4 +91,4 @@ FROM [Order Details] AS OD
 JOIN Orders AS O ON OD.OrderID = O.OrderID
 JOIN Employees AS E ON O.EmployeeID = E.EmployeeID
 GROUP BY E.Region, E.Country, E.City
-ORDER BY E.Country
+ORDER BY 'Venta Historica'
